@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dynamic_stack_card_swiper/dynamic_stack_card_swiper.dart';
 import 'package:dynamic_stack_card_swiper/enums.dart';
+import 'package:example/card_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -117,14 +118,16 @@ Widget addEntryButton(DynamicStackCardSwiperController controller) {
   return ElevatedButton.icon(
     onPressed: () {
       controller.addCardOnTop(
-        ExampleCandidateModel(
-          name: 'Item n°${increment++}',
-          job: 'Manager',
-          city: 'Town',
-          color: getRandomGradient(),
-        ),
-        getRandomAxis(),
-      );
+          CardBloc(
+            isLocked: Random().nextBool(),
+            model: ExampleCandidateModel(
+              name: 'Item n°${increment++}',
+              job: 'Manager',
+              city: 'Town',
+              color: getRandomGradient(),
+            ),
+          ),
+          getRandomAxis());
     },
     icon: Icon(Icons.add),
     label: Text("Add a new card"),
