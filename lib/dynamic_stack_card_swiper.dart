@@ -73,6 +73,10 @@ class DynamicStackCardSwiper<T> extends StatefulWidget {
   /// Set to true to disable swiping.
   final bool isDisabled;
 
+  /// Function that is called to check if an item can be swiped
+  /// (either manually or programmatically)
+  final bool Function(T)? isItemLocked;
+
   /// Callback that fires with the new swiping activity (eg a user swipes or
   /// the controller triggers a programmatic swipe).
   ///
@@ -109,6 +113,7 @@ class DynamicStackCardSwiper<T> extends StatefulWidget {
     this.backgroundCardScale = .9,
     this.backgroundCardOffset,
     this.isDisabled = false,
+    this.isItemLocked,
     this.swipeOptions = const SwipeOptions.all(),
     this.onTapDisabled,
     this.onSwipeBegin,
@@ -152,13 +157,18 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
     invertAngleOnBottomDrag: widget.invertAngleOnBottomDrag,
   );
 
+  bool get isItemLocked =>
+      widget.isDisabled || (widget.isItemLocked?.call(items.last) ?? false);
+
   Future<void> _onSwipe(AxisDirection direction) async {
-    final Swipe swipe = Swipe(
-      _defaultAnimation,
-      begin: _position._offset,
-      end: _directionToTarget(direction),
-    );
-    await _startActivity(swipe);
+    if (!isItemLocked) {
+      final Swipe swipe = Swipe(
+        _defaultAnimation,
+        begin: _position._offset,
+        end: _directionToTarget(direction),
+      );
+      await _startActivity(swipe);
+    }
   }
 
   // Moves the card back to starting position when a drag finished without
@@ -340,18 +350,20 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
               child: widget.cardBuilder.call(context, items.last),
             ),
             onTap: () {
-              if (widget.isDisabled) {
+              if (!isItemLocked) {
                 widget.onTapDisabled?.call();
               }
             },
             onPanStart: (tapInfo) {
-              if (widget.isDisabled) {
+              if (widget.isDisabled ||
+                  (widget.isItemLocked?.call(items.last) ?? false)) {
                 return;
               }
               _position._rotationPosition = tapInfo.localPosition;
             },
             onPanUpdate: (tapInfo) {
-              if (widget.isDisabled) {
+              if (widget.isDisabled ||
+                  (widget.isItemLocked?.call(items.last) ?? false)) {
                 return;
               }
               setState(() {
@@ -375,7 +387,8 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
               _onSwiping();
             },
             onPanEnd: (tapInfo) async {
-              if (!widget.isDisabled) {
+              if (!widget.isDisabled &&
+                  !(widget.isItemLocked?.call(items.last) ?? false)) {
                 return _onPanEnd();
               }
             },
@@ -418,7 +431,9 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
   }
 
   Future<void> _onSwipeDefault() async {
-    return _onSwipe(widget.defaultDirection);
+    if (!isItemLocked) {
+      return _onSwipe(widget.defaultDirection);
+    }
   }
 }
 
