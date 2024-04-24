@@ -37,7 +37,7 @@ class AddCardOnTop extends SwiperActivity {
 }
 
 /// A return to center triggered when a user releases a drag without having
-/// reached [AppinioSwiper.threshold]
+/// reached [DynamicStackCardSwiper.threshold]
 class CancelSwipe extends SwiperActivity {
   CancelSwipe(
     super.animation, {
@@ -48,7 +48,7 @@ class CancelSwipe extends SwiperActivity {
   AxisDirection get direction => super.direction.opposite;
 }
 
-/// An animation triggered by [AppinioSwiperController.animateTo].
+/// An animation triggered by [DynamicStackCardSwiperController.animateTo].
 class DrivenActivity extends SwiperActivity {
   DrivenActivity(
     super.animation, {
