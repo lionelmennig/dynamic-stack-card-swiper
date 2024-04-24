@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:dynamic_stack_card_swiper/dynamic_stack_card_swiper.dart';
 import 'package:dynamic_stack_card_swiper/enums.dart';
-import 'package:example/example_candidate_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'card_bloc.dart';
 import 'example_buttons.dart';
 import 'example_card.dart';
 
@@ -37,7 +38,7 @@ class Example extends StatefulWidget {
 }
 
 class _ExamplePageState extends State<Example> {
-  final DynamicStackCardSwiperController<ExampleCandidateModel> controller =
+  final DynamicStackCardSwiperController<CardBloc> controller =
       DynamicStackCardSwiperController();
 
   @override
@@ -59,22 +60,17 @@ class _ExamplePageState extends State<Example> {
                   top: 50,
                   bottom: 40,
                 ),
-                child: DynamicStackCardSwiper<ExampleCandidateModel>(
+                child: DynamicStackCardSwiper<CardBloc>(
                   invertAngleOnBottomDrag: true,
                   backgroundCardCount: 3,
                   swipeOptions: const SwipeOptions.all(),
                   controller: controller,
-                  onCardPositionChanged: (
-                    SwiperPosition position,
-                  ) {
-                    //debugPrint('${position.offset.toAxisDirection()}, '
-                    //    '${position.offset}, '
-                    //    '${position.angle}');
-                  },
+                  isItemLocked: (CardBloc item) => item.isLocked,
                   onSwipeEnd: _swipeEnd,
                   onEnd: _onEnd,
-                  cardBuilder: (context, item) {
-                    return ExampleCard(candidate: item);
+                  cardBuilder: (BuildContext context, CardBloc item) {
+                    return BlocProvider.value(
+                        value: item, child: ExampleCard());
                   },
                 ),
               ),
@@ -102,16 +98,16 @@ class _ExamplePageState extends State<Example> {
     );
   }
 
-  void _swipeEnd(ExampleCandidateModel? previousModel,
-      ExampleCandidateModel? targetModel, SwiperActivity activity) {
+  void _swipeEnd(
+      CardBloc? previousModel, CardBloc? targetModel, SwiperActivity activity) {
     switch (activity) {
       case Swipe():
         log('The card was swiped to the : ${activity.direction}');
-        log('previous model: ${previousModel?.name ?? "none"}, target model: ${targetModel?.name ?? "none"}');
+        log('previous model: ${previousModel?.model.name ?? "none"}, target model: ${targetModel?.model.name ?? "none"}');
         break;
       case AddCardOnTop():
         log('A new model was added from : ${activity.direction.name}');
-        log('previous model: ${previousModel?.name ?? "none"}, target model: ${targetModel?.name ?? "none"}');
+        log('previous model: ${previousModel?.model.name ?? "none"}, target model: ${targetModel?.model.name ?? "none"}');
         break;
       case CancelSwipe():
         log('A swipe was cancelled');
