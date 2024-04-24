@@ -30,7 +30,8 @@ Widget swipeRightButton(DynamicStackCardSwiperController controller) {
         (-1 * progress).clamp(0, 1),
       )!;
       return GestureDetector(
-        onTap: () => (controller.size ?? 0) > 0 ? controller.swipeRight() : null,
+        onTap: () =>
+            (controller.size ?? 0) > 0 ? controller.swipeRight() : null,
         child: Transform.scale(
           scale: 1 + .1 * progress.clamp(0, 1),
           child: Container(
@@ -137,7 +138,8 @@ LinearGradient getRandomGradient() {
 }
 
 AxisDirection getRandomAxis() {
-  return AxisDirection.values[Random().nextInt(AxisDirection.values.length - 1)];
+  return AxisDirection
+      .values[Random().nextInt(AxisDirection.values.length - 1)];
 }
 
 class TutorialAnimationButton extends StatelessWidget {

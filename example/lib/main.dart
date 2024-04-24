@@ -37,7 +37,8 @@ class Example extends StatefulWidget {
 }
 
 class _ExamplePageState extends State<Example> {
-  final DynamicStackCardSwiperController<ExampleCandidateModel> controller = DynamicStackCardSwiperController();
+  final DynamicStackCardSwiperController<ExampleCandidateModel> controller =
+      DynamicStackCardSwiperController();
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +102,8 @@ class _ExamplePageState extends State<Example> {
     );
   }
 
-  void _swipeEnd(ExampleCandidateModel? previousModel, ExampleCandidateModel? targetModel, SwiperActivity activity) {
+  void _swipeEnd(ExampleCandidateModel? previousModel,
+      ExampleCandidateModel? targetModel, SwiperActivity activity) {
     switch (activity) {
       case Swipe():
         log('The card was swiped to the : ${activity.direction}');
