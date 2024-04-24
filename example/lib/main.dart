@@ -40,66 +40,101 @@ class Example extends StatefulWidget {
 class _ExamplePageState extends State<Example> {
   final DynamicStackCardSwiperController<CardBloc> controller =
       DynamicStackCardSwiperController();
+  final int backgroundCardCount = 3;
+  bool canAddCardsSecretly = false;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: CupertinoPageScaffold(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 50.0),
-              child: addEntryButton(controller),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .75,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 25,
-                  right: 25,
-                  top: 50,
-                  bottom: 40,
-                ),
-                child: DynamicStackCardSwiper<CardBloc>(
-                  invertAngleOnBottomDrag: true,
-                  backgroundCardCount: 3,
-                  swipeOptions: const SwipeOptions.all(),
-                  controller: controller,
-                  isItemLocked: (CardBloc item) => item.isLocked,
-                  onSwipeEnd: _swipeEnd,
-                  onEnd: _onEnd,
-                  cardBuilder: (BuildContext context, CardBloc item) {
-                    return BlocProvider.value(
-                        value: item, child: ExampleCard());
-                  },
-                ),
-              ),
-            ),
-            IconTheme.merge(
-              data: const IconThemeData(size: 40),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TutorialAnimationButton(_shakeCard),
-                  const SizedBox(
-                    width: 20,
+        child: SafeArea(
+          top: true,
+          bottom: true,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: AlignmentDirectional.bottomCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * .7,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 25,
+                            right: 25,
+                            top: 50,
+                            bottom: 40,
+                          ),
+                          child: DynamicStackCardSwiper<CardBloc>(
+                            invertAngleOnBottomDrag: true,
+                            backgroundCardCount: backgroundCardCount,
+                            swipeOptions: const SwipeOptions.all(),
+                            controller: controller,
+                            isItemLocked: (CardBloc item) => item.isLocked,
+                            onSwipeEnd: _swipeEnd,
+                            onEnd: _onEnd,
+                            cardBuilder: (BuildContext context, CardBloc item) {
+                              return BlocProvider.value(
+                                  value: item, child: ExampleCard());
+                            },
+                          ),
+                        ),
+                      ),
+                      IconTheme.merge(
+                        data: const IconThemeData(size: 40),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TutorialAnimationButton(_shakeCard),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            swipeLeftButton(controller),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            swipeRightButton(controller),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
-                  swipeLeftButton(controller),
-                  const SizedBox(
-                    width: 20,
+                ),
+                Align(
+                  alignment: AlignmentDirectional.topCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      addItemButton(controller),
+                      if (canAddCardsSecretly) addItemDownTheStack(controller),
+                    ],
                   ),
-                  swipeRightButton(controller),
-                ],
-              ),
-            )
-          ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
+  bool get couldAddCardsSecretlyDownTheStack =>
+      (controller.items?.length ?? 0) > backgroundCardCount + 1;
+
   void _swipeEnd(
       CardBloc? previousModel, CardBloc? targetModel, SwiperActivity activity) {
+    if (!canAddCardsSecretly && couldAddCardsSecretlyDownTheStack) {
+      setState(() {
+        canAddCardsSecretly = true;
+      });
+    } else if (canAddCardsSecretly && !couldAddCardsSecretlyDownTheStack) {
+      setState(() {
+        canAddCardsSecretly = false;
+      });
+    }
     switch (activity) {
       case Swipe():
         log('The card was swiped to the : ${activity.direction}');

@@ -528,6 +528,13 @@ class DynamicStackCardSwiperController<T> extends ChangeNotifier {
   }
 
   /// The current stack.
+  ///
+  /// You can consider inserting items manually from there, but the widget
+  /// will not display them until next event, and there will not be any
+  /// animation inserting them. Still it can be useful if you wish, for example,
+  /// to insert items at the very bottom of the stack before user reaches it;
+  /// you should just pay attention to the [backgroundCardCount] you are using,
+  /// so visual doesn't end up jumping weirdly on next event.
   List<T>? get items {
     return _attachedSwiper?.items;
   }

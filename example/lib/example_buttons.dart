@@ -113,8 +113,8 @@ Widget swipeLeftButton(DynamicStackCardSwiperController controller) {
   );
 }
 
-// Add entry button
-Widget addEntryButton(DynamicStackCardSwiperController controller) {
+// Add item button
+Widget addItemButton(DynamicStackCardSwiperController controller) {
   return ElevatedButton.icon(
     onPressed: () {
       controller.addCardOnTop(
@@ -131,6 +131,27 @@ Widget addEntryButton(DynamicStackCardSwiperController controller) {
     },
     icon: Icon(Icons.add),
     label: Text("Add a new card"),
+  );
+}
+
+// Add item (down the stack) button
+Widget addItemDownTheStack(DynamicStackCardSwiperController controller) {
+  return ElevatedButton.icon(
+    onPressed: () {
+      controller.items?.insert(
+          0,
+          CardBloc(
+            isLocked: Random().nextBool(),
+            model: ExampleCandidateModel(
+              name: 'Item n°${increment++}',
+              job: 'Manager',
+              city: 'Town',
+              color: getRandomGradient(),
+            ),
+          ));
+    },
+    icon: Icon(Icons.add),
+    label: Text("Secretly add a new card down the stack"),
   );
 }
 
