@@ -124,7 +124,8 @@ class DynamicStackCardSwiper<T> extends StatefulWidget {
   State createState() => _DynamicStackCardSwiperState<T>();
 }
 
-class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> with TickerProviderStateMixin {
+class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
+    with TickerProviderStateMixin {
   static const _defaultBackgroundCardOffset = Offset(0, 40);
 
   final List<T> items = [];
@@ -140,9 +141,9 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
   Future<bool>? _previousActivityFuture;
 
   AnimationController get _defaultAnimation => AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+        vsync: this,
+        duration: widget.duration,
+      );
 
   late final SwiperPosition _position = SwiperPosition(
     cardSize: MediaQuery.sizeOf(context),
@@ -194,7 +195,7 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
       await _previousActivityFuture;
     }
     final int? targetIndex = switch (newActivity) {
-      Swipe() => items.length > 2 ? items.length - 2 : null,
+      Swipe() => items.length > 1 ? items.length - 2 : null,
       AddCardOnTop() => items.length - 1,
       CancelSwipe() => items.length - 1,
       DrivenActivity() => items.length - 1,
@@ -207,8 +208,7 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
     widget.onSwipeBegin?.call(
         previousIndex != null ? items[previousIndex] : null,
         targetIndex != null ? items[targetIndex] : null,
-        newActivity
-    );
+        newActivity);
     _previousActivityFuture = newActivity.animation
         .forward()
         .orCancel
@@ -235,11 +235,8 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
     } else if (previousIndex != null) {
       previousItem = items[previousIndex];
     }
-    widget.onSwipeEnd?.call(
-        previousItem,
-        targetIndex != null ? items[targetIndex] : null,
-        newActivity
-    );
+    widget.onSwipeEnd?.call(previousItem,
+        targetIndex != null ? items[targetIndex] : null, newActivity);
 
     if (items.isEmpty) {
       widget.onEnd?.call();
@@ -249,10 +246,10 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
   }
 
   Future<void> _animateTo(
-      Offset target, {
-        required Duration duration,
-        required Curve curve,
-      }) async {
+    Offset target, {
+    required Duration duration,
+    required Curve curve,
+  }) async {
     final DrivenActivity newActivity = DrivenActivity(
       AnimationController(
         vsync: this,
@@ -326,11 +323,13 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
               effectiveBackgroundCardCount,
               (index) => items.length - 2 - index,
             ),
-            builder: (context, index) => widget.cardBuilder.call(context, items[index]),
+            builder: (context, index) =>
+                widget.cardBuilder.call(context, items[index]),
             scaleIncrement: _effectiveScaleIncrement,
             offsetIncrement: _effectiveOffset,
             initialEffectFactor: 1 - maxProgressToThreshold,
-            fadeLastItem: effectiveBackgroundCardCount > widget.backgroundCardCount,
+            fadeLastItem:
+                effectiveBackgroundCardCount > widget.backgroundCardCount,
           ),
         Transform.translate(
           offset: _position.offset,
@@ -571,10 +570,10 @@ class DynamicStackCardSwiperController<T> extends ChangeNotifier {
   /// The card will not reset or snap at the end of the animation-it is up to
   /// the caller to animate the card back to the center.
   Future<void> animateTo(
-      Offset target, {
-        required Duration duration,
-        required Curve curve,
-      }) async {
+    Offset target, {
+    required Duration duration,
+    required Curve curve,
+  }) async {
     _assertIsAttached();
     await _attachedSwiper!._animateTo(
       target,
@@ -585,8 +584,8 @@ class DynamicStackCardSwiperController<T> extends ChangeNotifier {
 
   void _attach(_DynamicStackCardSwiperState swiper) {
     assert(
-    _attachedSwiper == null,
-    'Controller can only be attached to one swiper widget at a time.',
+      _attachedSwiper == null,
+      'Controller can only be attached to one swiper widget at a time.',
     );
     _attachedSwiper = swiper;
     swiper._position.addListener(notifyListeners);
@@ -638,8 +637,8 @@ class SwiperPosition with ChangeNotifier {
     // If we allow inverting the direction and the user is dragging from the
     // bottom half of the card, angle in the opposite direction.
     final direction = _invertAngleOnBottomDrag &&
-        _rotationAlignment != null &&
-        _rotationAlignment!.y > 0
+            _rotationAlignment != null &&
+            _rotationAlignment!.y > 0
         ? -1
         : 1;
     return (direction * _maxAngle * (_offset.dx / _cardSize.width))
@@ -656,9 +655,9 @@ class SwiperPosition with ChangeNotifier {
   /// This is 0 when the card is centered and 1 when it is swiped offscreen and
   /// about to be dismissed.
   double get progress => max(
-    _offsetRelativeToSize.dx.abs(),
-    _offsetRelativeToSize.dy.abs(),
-  );
+        _offsetRelativeToSize.dx.abs(),
+        _offsetRelativeToSize.dy.abs(),
+      );
 
   /// The current swiping progress relative to the swiping threshold.
   ///
@@ -699,14 +698,14 @@ class SwiperPosition with ChangeNotifier {
   bool _invertAngleOnBottomDrag;
 
   Offset get _offsetRelativeToSize => Offset(
-    _offset.dx / _cardSize.width,
-    _offset.dy / _cardSize.height,
-  );
+        _offset.dx / _cardSize.width,
+        _offset.dy / _cardSize.height,
+      );
 
   Offset get _offsetRelativeToThreshold => Offset(
-    _offset.dx / _threshold,
-    _offset.dy / _threshold,
-  );
+        _offset.dx / _threshold,
+        _offset.dy / _threshold,
+      );
 
   void _updateFromWidgetState(DynamicStackCardSwiper widget) {
     _threshold = widget.threshold;

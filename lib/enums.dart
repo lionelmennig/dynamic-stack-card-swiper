@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 /// All Swiper activities inherit from this class.
 sealed class SwiperActivity extends Tween<Offset> {
   SwiperActivity(
-      this.animation, {
-        required super.begin,
-        required super.end,
-      });
+    this.animation, {
+    required super.begin,
+    required super.end,
+  });
 
   final AnimationController animation;
 
@@ -22,40 +22,40 @@ sealed class SwiperActivity extends Tween<Offset> {
 /// A swipe triggered either by the controller or a user drag.
 class Swipe extends SwiperActivity {
   Swipe(
-      super.animation, {
-        required super.begin,
-        required super.end,
-      });
+    super.animation, {
+    required super.begin,
+    required super.end,
+  });
 }
 
 /// A programmatic swipe to add an item on top of the stack
 class AddCardOnTop extends SwiperActivity {
   AddCardOnTop(
-      super.animation, {
-        required super.begin,
-      }) : super(end: Offset.zero);
+    super.animation, {
+    required super.begin,
+  }) : super(end: Offset.zero);
 }
 
 /// A return to center triggered when a user releases a drag without having
-/// reached [AppinioSwiper.threshold]
+/// reached [DynamicStackCardSwiper.threshold]
 class CancelSwipe extends SwiperActivity {
   CancelSwipe(
-      super.animation, {
-        required super.begin,
-      }) : super(end: Offset.zero);
+    super.animation, {
+    required super.begin,
+  }) : super(end: Offset.zero);
 
   @override
   AxisDirection get direction => super.direction.opposite;
 }
 
-/// An animation triggered by [AppinioSwiperController.animateTo].
+/// An animation triggered by [DynamicStackCardSwiperController.animateTo].
 class DrivenActivity extends SwiperActivity {
   DrivenActivity(
-      super.animation, {
-        required this.curve,
-        required super.begin,
-        required super.end,
-      });
+    super.animation, {
+    required this.curve,
+    required super.begin,
+    required super.end,
+  });
 
   final Curve curve;
 
@@ -104,11 +104,11 @@ extension DirectionUtils on AxisDirection {
   bool get isHorizontal => !isVertical;
 
   AxisDirection get opposite => switch (this) {
-    AxisDirection.up => AxisDirection.down,
-    AxisDirection.down => AxisDirection.up,
-    AxisDirection.left => AxisDirection.right,
-    AxisDirection.right => AxisDirection.left,
-  };
+        AxisDirection.up => AxisDirection.down,
+        AxisDirection.down => AxisDirection.up,
+        AxisDirection.left => AxisDirection.right,
+        AxisDirection.right => AxisDirection.left,
+      };
 }
 
 extension OffsetUtils on Offset {
