@@ -194,7 +194,7 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>> w
       await _previousActivityFuture;
     }
     final int? targetIndex = switch (newActivity) {
-      Swipe() => items.length > 2 ? items.length - 2 : null,
+      Swipe() => items.length > 1 ? items.length - 2 : null,
       AddCardOnTop() => items.length - 1,
       CancelSwipe() => items.length - 1,
       DrivenActivity() => items.length - 1,
