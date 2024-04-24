@@ -12,6 +12,10 @@ I built this package because I wanted to be able to add new cards on top of the 
 
 Now you can add an item on top of the stack using ```DynamicStackCardSwiperController<MyModel>.addCardOnTop(modelItem, direction)``` (`direction` being an `AxisDirection` allowing you to choose from which side of the screen the item will come from to join the stack).
 
+### Prevent a specific item from being swiped (>= 1.1.0)
+
+Now you can specify an `isItemLocked` check in the definition of the ```DynamicStackCardSwiper```, based on the current item being given as a parameter.
+
 ## AppinioSwiper's original Show Cases
 
 <img src="https://github.com/appinioGmbH/flutter_packages/blob/main/assets/swiper/swiping.gif?raw=true" height="250" /> <img src="https://github.com/appinioGmbH/flutter_packages/blob/main/assets/swiper/swipe_button.gif?raw=true" height="250" /> 
@@ -117,6 +121,7 @@ class Example extends StatelessWidget {
 | onEnd            | -                                                  | Called when there is no Widget left to be swiped away                                                                               |  false   |
 | defaultDirection        | right                                       | Direction in which the card is swiped away when triggered from the outside                                                          |  false   |
 | onSwipeCancelled | -                                                  | Gets called when the user leaves the card before the threshold is reached                                                           |  false   |
+| isItemLocked | -                                                  | Gets called when the user tries to move a card (manually or programmatically)                                                           |  false   |
 
 #### Controller
 
