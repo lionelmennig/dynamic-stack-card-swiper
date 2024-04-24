@@ -1,6 +1,6 @@
 ```dynamic_stack_card_swiper``` is a Flutter package for a dynamic Tinder Card Swiper, based on [appinio_swiper](https://github.com/appinioGmbH/flutter_packages/tree/main/packages/appinio_swiper).
 
-As for ```appinio_swiper```, it allows swiping in all directions with any Custom Widget (Stateless or Statefull) with very smooth animations supporting Android, iOS & WebApp. The difference is you can now also dynamically add new item(s) on top of the existing stack.
+As for ```appinio_swiper```, it allows swiping in all directions with any Custom Widget (Stateless or Stateful) with very smooth animations supporting Android, iOS & WebApp. The difference is you can now also dynamically add new item(s) on top of the existing stack.
 
 ## Why?
 
@@ -15,6 +15,10 @@ Now you can add an item on top of the stack using ```DynamicStackCardSwiperContr
 ### Prevent a specific item from being swiped (>= 1.1.0)
 
 Now you can specify an `isItemLocked` check in the definition of the ```DynamicStackCardSwiper```, based on the current item being given as a parameter.
+
+### Access the current stack from the controller (>= 1.2.0)
+
+Now you can access the stack for any reason of yours, including the insertion of new items anywhere (without animation, though!).
 
 ## AppinioSwiper's original Show Cases
 
@@ -139,6 +143,8 @@ for the usage.
 | swipeDown  | Swipes the card to the down side and removes it from the stack.            |
 | addCardOnTop    | Adds a new card to the top of the stack. |
 | animateTo    | Animates the current offset of the card on top to the required Offset in a given duration. |
+
+You can also use it to access the current stack, aiming to check any item, or even to add new ones (without any animation, though!).
 
 <hr/>
 Made with ❤ by Lionel Mennig (<a href="https://l10.be">L10.be</a>) based on work kindly provided by the Flutter team at <a href="https://appinio.app">Appinio GmbH</a>
