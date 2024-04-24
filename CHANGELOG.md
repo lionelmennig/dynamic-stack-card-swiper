@@ -1,3 +1,7 @@
+## [1.2.0] - 2024.04.24
+
+* Exposes the current stack in the controller
+
 ## [1.1.0] - 2024.04.24
 
 * Implements isItemLocked to have a way to prevent a specific card from being swiped (in any way)

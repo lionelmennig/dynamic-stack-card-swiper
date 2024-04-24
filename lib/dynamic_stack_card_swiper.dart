@@ -506,7 +506,7 @@ class _BackgroundCards extends StatelessWidget {
 /// The controller notifies listeners when a swipe starts and for each tick of a
 /// swipe animation.
 class DynamicStackCardSwiperController<T> extends ChangeNotifier {
-  _DynamicStackCardSwiperState? _attachedSwiper;
+  _DynamicStackCardSwiperState<T>? _attachedSwiper;
 
   /// The current activity of the swiper.
   ///
@@ -522,8 +522,21 @@ class DynamicStackCardSwiperController<T> extends ChangeNotifier {
     return _attachedSwiper?._position;
   }
 
+  /// The current size of the stack.
   int? get size {
     return _attachedSwiper?.items.length;
+  }
+
+  /// The current stack.
+  ///
+  /// You can consider inserting items manually from there, but the widget
+  /// will not display them until next event, and there will not be any
+  /// animation inserting them. Still it can be useful if you wish, for example,
+  /// to insert items at the very bottom of the stack before user reaches it;
+  /// you should just pay attention to the [backgroundCardCount] you are using,
+  /// so visual doesn't end up jumping weirdly on next event.
+  List<T>? get items {
+    return _attachedSwiper?.items;
   }
 
   /// The current position of the card, as a result of a user drag and/or a
@@ -597,7 +610,7 @@ class DynamicStackCardSwiperController<T> extends ChangeNotifier {
     );
   }
 
-  void _attach(_DynamicStackCardSwiperState swiper) {
+  void _attach(_DynamicStackCardSwiperState<T> swiper) {
     assert(
       _attachedSwiper == null,
       'Controller can only be attached to one swiper widget at a time.',
