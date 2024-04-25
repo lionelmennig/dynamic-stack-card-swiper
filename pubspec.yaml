@@ -1,6 +1,6 @@
 name: dynamic_stack_card_swiper
-description: "The awesome fully customisable Tinder Card Swiper provided by Appinio's team, now supporting dynamic cards adding."
-version: 1.2.0
+description: "The awesome Tinder Card Swiper provided by Appinio's team, now allowing to add new cards whenever you want!"
+version: 1.3.0
 homepage: https://www.l10.be
 repository: https://github.com/lionelmennig/dynamic-stack-card-swiper
 

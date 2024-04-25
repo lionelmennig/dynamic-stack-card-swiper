@@ -12,13 +12,15 @@ I built this package because I wanted to be able to add new cards on top of the 
 
 Now you can add an item on top of the stack using ```DynamicStackCardSwiperController<MyModel>.addCardOnTop(modelItem, direction)``` (`direction` being an `AxisDirection` allowing you to choose from which side of the screen the item will come from to join the stack).
 
-### Prevent a specific item from being swiped (>= 1.1.0)
-
-Now you can specify an `isItemLocked` check in the definition of the ```DynamicStackCardSwiper```, based on the current item being given as a parameter.
-
 ### Access the current stack from the controller (>= 1.2.0)
 
 Now you can access the stack for any reason of yours, including the insertion of new items anywhere (without animation, though!).
+
+### Prevent a specific item from being swiped in some given direction(s) (>= 1.3.0)
+
+Replacing the `isItemLocked` (implemented in v1.1.0), now you can specify a `canItemBeSwiped` function to disable swipes in some direction(s) for given item.
+A `onSwipeUnauthorized` callback has been added in case user tries to swipe in such a disabled direction.
+```DynamicStackCardSwiperController```'s swipe methods were given a `force` flag to ignore (or not) this condition.
 
 ## AppinioSwiper's original Show Cases
 
@@ -125,7 +127,8 @@ class Example extends StatelessWidget {
 | onEnd            | -                                                  | Called when there is no Widget left to be swiped away                                                                               |  false   |
 | defaultDirection        | right                                       | Direction in which the card is swiped away when triggered from the outside                                                          |  false   |
 | onSwipeCancelled | -                                                  | Gets called when the user leaves the card before the threshold is reached                                                           |  false   |
-| isItemLocked | -                                                  | Gets called when the user tries to move a card (manually or programmatically)                                                           |  false   |
+| canItemBeSwiped         | -                                           | Gets called when the user tries to swipe a card, checking if this item's specific rules are met                                     |  false   |
+| onSwipeUnauthorized     | -                                           | Gets called when the user tried to swipe a card in a direction not allowed by ```canItemBeSwiped```                                 |  false   |
 
 #### Controller
 

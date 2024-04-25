@@ -73,7 +73,8 @@ class _ExamplePageState extends State<Example> {
                             backgroundCardCount: backgroundCardCount,
                             swipeOptions: const SwipeOptions.all(),
                             controller: controller,
-                            isItemLocked: (CardBloc item) => item.isLocked,
+                            canItemBeSwiped: _canItemBeSwiped,
+                            onSwipeUnauthorized: _onSwipeUnauthorized,
                             onSwipeEnd: _swipeEnd,
                             onEnd: _onEnd,
                             cardBuilder: (BuildContext context, CardBloc item) {
@@ -119,6 +120,14 @@ class _ExamplePageState extends State<Example> {
         ),
       ),
     );
+  }
+
+  bool _canItemBeSwiped(CardBloc item, AxisDirection direction) {
+    return direction == AxisDirection.left || !item.isLocked;
+  }
+
+  void _onSwipeUnauthorized(CardBloc item, AxisDirection direction) {
+    log('Swipe unauthorized. The card with model "${item.model.name}" cannot be swiped to : ${direction}. Swipe has been canceled.');
   }
 
   bool get couldAddCardsSecretlyDownTheStack =>
