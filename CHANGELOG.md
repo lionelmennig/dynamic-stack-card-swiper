@@ -1,3 +1,10 @@
+## [1.3.0] - 2024.04.25
+
+* Implements a way to disallow swipes in some direction(s) for a given item (canItemBeSwiped)
+* Animates card back to its initial location and triggers a callback whenever it occurs (onSwipeUnauthorized)
+* Removes isItemLocked property
+* Fixes onTapDisabled callback not being called like it should
+
 ## [1.2.0] - 2024.04.24
 
 * Exposes the current stack in the controller
