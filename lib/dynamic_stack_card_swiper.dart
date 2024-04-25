@@ -73,9 +73,15 @@ class DynamicStackCardSwiper<T> extends StatefulWidget {
   /// Set to true to disable swiping.
   final bool isDisabled;
 
-  /// Function that is called to check if an item can be swiped
-  /// (either manually or programmatically)
-  final bool Function(T)? isItemLocked;
+  /// Function that is called to check if an item can be swiped in a given
+  /// direction
+  final bool Function(T, AxisDirection)? canItemBeSwiped;
+
+  /// Callback that fires with the current item and the swipe direction when
+  /// a swipe occurred in a direction item cannot be swiped to.
+  ///
+  /// See [canItemBeSwiped] for more details.
+  final void Function(T, AxisDirection)? onSwipeUnauthorized;
 
   /// Callback that fires with the new swiping activity (eg a user swipes or
   /// the controller triggers a programmatic swipe).
@@ -113,7 +119,8 @@ class DynamicStackCardSwiper<T> extends StatefulWidget {
     this.backgroundCardScale = .9,
     this.backgroundCardOffset,
     this.isDisabled = false,
-    this.isItemLocked,
+    this.canItemBeSwiped,
+    this.onSwipeUnauthorized,
     this.swipeOptions = const SwipeOptions.all(),
     this.onTapDisabled,
     this.onSwipeBegin,
@@ -157,17 +164,22 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
     invertAngleOnBottomDrag: widget.invertAngleOnBottomDrag,
   );
 
-  bool get isItemLocked =>
-      widget.isDisabled || (widget.isItemLocked?.call(items.last) ?? false);
+  bool _canItemBeSwiped(T item, AxisDirection direction) =>
+      (widget.canItemBeSwiped?.call(item, direction) ?? true);
 
-  Future<void> _onSwipe(AxisDirection direction) async {
-    if (!isItemLocked) {
+  Future<void> _onSwipe(AxisDirection direction, {required bool forced}) async {
+    if (forced || _canItemBeSwiped(items.last, direction)) {
       final Swipe swipe = Swipe(
         _defaultAnimation,
         begin: _position._offset,
         end: _directionToTarget(direction),
       );
       await _startActivity(swipe);
+    } else {
+      widget.onSwipeUnauthorized?.call(items.last, direction);
+      if (_position._offset != Offset.zero) {
+        _onSwipeCancelled(context);
+      }
     }
   }
 
@@ -350,20 +362,18 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
               child: widget.cardBuilder.call(context, items.last),
             ),
             onTap: () {
-              if (!isItemLocked) {
+              if (widget.isDisabled) {
                 widget.onTapDisabled?.call();
               }
             },
             onPanStart: (tapInfo) {
-              if (widget.isDisabled ||
-                  (widget.isItemLocked?.call(items.last) ?? false)) {
+              if (widget.isDisabled) {
                 return;
               }
               _position._rotationPosition = tapInfo.localPosition;
             },
             onPanUpdate: (tapInfo) {
-              if (widget.isDisabled ||
-                  (widget.isItemLocked?.call(items.last) ?? false)) {
+              if (widget.isDisabled) {
                 return;
               }
               setState(() {
@@ -387,10 +397,11 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
               _onSwiping();
             },
             onPanEnd: (tapInfo) async {
-              if (!widget.isDisabled &&
-                  !(widget.isItemLocked?.call(items.last) ?? false)) {
-                return _onPanEnd();
+              if (widget.isDisabled) {
+                return;
               }
+
+              return _onPanEnd();
             },
           ),
         ),
@@ -427,13 +438,11 @@ class _DynamicStackCardSwiperState<T> extends State<DynamicStackCardSwiper<T>>
         _position._offsetRelativeToThreshold.dy.abs() < 1) {
       return _onSwipeCancelled(context);
     }
-    await _onSwipe(_position.offset.toAxisDirection());
+    await _onSwipe(_position.offset.toAxisDirection(), forced: false);
   }
 
-  Future<void> _onSwipeDefault() async {
-    if (!isItemLocked) {
-      return _onSwipe(widget.defaultDirection);
-    }
+  Future<void> _onSwipeDefault({required bool forced}) async {
+    return _onSwipe(widget.defaultDirection, forced: forced);
   }
 }
 
@@ -550,39 +559,54 @@ class DynamicStackCardSwiperController<T> extends ChangeNotifier {
 
   /// Swipe the card in the default direction.
   ///
+  /// Set [force] to false if [DynamicStackCardSwiper.canItemBeSwiped] condition
+  /// should be verified.
+  ///
   /// The default direction is set by the attached [DynamicStackCardSwiper] widget.
-  Future<void> swipeDefault() async {
+  Future<void> swipeDefault({bool force = true}) async {
     _assertIsAttached();
-    await _attachedSwiper!._onSwipeDefault();
+    await _attachedSwiper!._onSwipeDefault(forced: force);
     notifyListeners();
   }
 
   /// Swipe the card to the left side.
-  Future<void> swipeLeft() async {
+  ///
+  /// Set [force] to false if [DynamicStackCardSwiper.canItemBeSwiped] condition
+  /// should be verified.
+  Future<void> swipeLeft({bool force = true}) async {
     _assertIsAttached();
-    await _attachedSwiper!._onSwipe(AxisDirection.left);
+    await _attachedSwiper!._onSwipe(AxisDirection.left, forced: force);
     notifyListeners();
   }
 
   /// Swipe the card to the right side.
-  Future<void> swipeRight() async {
+  ///
+  /// Set [force] to false if [DynamicStackCardSwiper.canItemBeSwiped] condition
+  /// should be verified.
+  Future<void> swipeRight({bool force = true}) async {
     _assertIsAttached();
     // ignore: unawaited_futures
-    _attachedSwiper!._onSwipe(AxisDirection.right);
+    _attachedSwiper!._onSwipe(AxisDirection.right, forced: force);
     notifyListeners();
   }
 
   /// Swipe the card to the top.
-  Future<void> swipeUp() async {
+  ///
+  /// Set [force] to false if [DynamicStackCardSwiper.canItemBeSwiped] condition
+  /// should be verified.
+  Future<void> swipeUp({bool force = true}) async {
     _assertIsAttached();
-    await _attachedSwiper!._onSwipe(AxisDirection.up);
+    await _attachedSwiper!._onSwipe(AxisDirection.up, forced: force);
     notifyListeners();
   }
 
   /// Swipe the card to the bottom.
-  Future<void> swipeDown() async {
+  ///
+  /// Set [force] to false if [DynamicStackCardSwiper.canItemBeSwiped] condition
+  /// should be verified.
+  Future<void> swipeDown({bool force = true}) async {
     _assertIsAttached();
-    await _attachedSwiper!._onSwipe(AxisDirection.down);
+    await _attachedSwiper!._onSwipe(AxisDirection.down, forced: force);
     notifyListeners();
   }
 
